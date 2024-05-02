@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,10 +40,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     #create new app 
-    "vendors"
+    "vendors",
 
     #rest framework package installed
-    "rest_framework"
+    "rest_framework",
+
+    # "api",
 ]
 
 MIDDLEWARE = [
