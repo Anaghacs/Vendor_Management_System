@@ -20,7 +20,9 @@ class Vendor(models.Model):
             return self.name
 
 class PurchaseOrder(models.Model):
+
       #This model captures the details of each purchase order
+
       po_number =  models.CharField(max_length = 50, unique = True)
       Vendor = models.ForeignKey(Vendor, on_delete = models.CASCADE)
       order_date = models.DateTimeField(default = timezone.now)
@@ -42,7 +44,7 @@ class PurchaseOrder(models.Model):
       
 class HistoricalPerformance(models.Model):
       
-      # Model representing historical performance data of vendors.
+      # This model optionally stores historical data on vendor performance, enabling trend analysis.
       
       vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
       date = models.DateTimeField()
