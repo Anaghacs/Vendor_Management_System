@@ -95,7 +95,7 @@ def vendors(request):
 
 class PurchaseOrderListCreateAPIView(ListCreateAPIView):
       """
-      An API endpoint for listing and creating purchase orders, featuring vendor filtering capabilities.    
+      An API endpoint for both listing and creating purchase orders, with the added functionality of vendor filtering.      
       """
 
       queryset = PurchaseOrder.objects.all()
@@ -104,26 +104,26 @@ class PurchaseOrderListCreateAPIView(ListCreateAPIView):
 
       def get_queryset(self):
             """
-            Override to filter by vendor (optional parameter in query string).
+            Include an override option for filtering by vendor (optional parameter in the query string).            
             """
             queryset = PurchaseOrder.objects.all()
             vendor_id = self.request.query_params.get("vendor")
             if vendor_id:
-                  queryset = queryset.filter(Q(vendor__id=vendor_id))
+                  queryset = queryset.filter(Q(vendor__id = vendor_id))
             return queryset
 
       def post(self, request):
             """
             Create a purchase order.
             """
-            serializer = PurchaseOrderSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
+            serializer = PurchaseOrderSerializer(data = request.data)
+            serializer.is_valid(raise_exception = True)
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
     
 # class PurchaseOrderRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 #       """
-#       API endpoint to retrieve, update, and delete a specific purchase order.
+#       An API endpoint for retrieving, updating, and deleting a particular purchase order.    
 #       """
 
 #       queryset = PurchaseOrder.objects.all()
@@ -133,8 +133,55 @@ class PurchaseOrderListCreateAPIView(ListCreateAPIView):
 #             """
 #             Override to handle 404 (Not Found) for missing purchase orders.
 #             """
-#             pk = self.kwargs.get("po_id")
+#             pkd = self.kwargs.get("po_id")
 #             try:
-#                   return self.queryset.get(pk=pk)
+#                   return self.queryset.get(pk = pkd)
 #             except PurchaseOrder.DoesNotExist:
-#                   raise Http404("Purchase order with ID " + str(pk) + " purchase order not found.")
+#                   raise Http404("Purchase order ID " + str(pkd) + " is not found.")
+            
+     
+class PurchaseOrderRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    """
+    An API endpoint for retrieving, updating, and deleting a particular purchase order.
+    """
+
+    queryset = PurchaseOrder.objects.all()
+    serializer_class = PurchaseOrderSerializer
+
+    def get_object(self):
+        """
+        Override to handle 404 (Not Found) for missing purchase orders.
+        """
+        pkd = self.kwargs.get("po_id")  # assuming 'pk' is used for the purchase order ID in the URL
+        try:
+            return self.queryset.get(pk = pkd)
+        except PurchaseOrder.DoesNotExist:
+            raise Http404("Purchase order ID " + str(pkd) + " is not found.")
+
+    def get(self, request, *args, **kwargs):
+        """
+        Retrieve a particular purchase order.
+        """
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Delete a particular purchase order.
+        """
+        instance = self.get_object()
+        self.perform_destroy(instance)
+      #   return Response(status = status.HTTP_204_NO_CONTENT)
+        raise Http404("Purchase order ID " + str(instance) + " is not found.")
+
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update a particular purchase order.
+        """
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data = request.data)
+        serializer.is_valid(raise_exception = True)
+        serializer.save()
+        return Response(serializer.data)
