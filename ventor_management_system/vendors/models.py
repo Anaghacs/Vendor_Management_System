@@ -4,13 +4,13 @@ from django.core.validators import MinValueValidator
 # Create your models here.
 
 class Vendor(models.Model):
-      # This model stores essential information about each vendor and their performance metrics.
+      # This model stores essential information about each vendor.
       name = models.CharField(max_length = 100, blank = True)
       contact_details = models.TextField(blank = False)
       address = models.TextField(blank = False)
       vendor_code = models.CharField(max_length = 50, unique = True, blank = False)
 
-      #Performace metrics(Calculated fields, not actual database )
+      #Performace metrics(Calculated fields, not actual database).
       on_time_delivery_rate = models.FloatField(default = 0.0)
       quality_rating_avg = models.FloatField(default = 0.0)
       average_response_time = models.FloatField(default = 0.0)
@@ -38,6 +38,7 @@ class PurchaseOrder(models.Model):
       quality_rating = models.FloatField(blank=True, null=True)
       issue_date = models.DateTimeField(default=timezone.now)
       acknowledgment_date = models.DateTimeField(blank=True, null=True)
+
 
       def __str__(self):
             return f" PO :{self.po_number} - {self.vendor.name}"  
