@@ -29,9 +29,8 @@ class Vendor(models.Model):
             completed_orders = PurchaseOrder.objects.filter(vendor = self, status = "completed")
             if not completed_orders.count():
                   return Decimal("0.00")
-            
             current_time = timezone.now()
-
+            
             on_time_deliveries = completed_orders.filter(delivery_date__date__gte = current_time).count()
             total_completed_orders = completed_orders.count()
 
@@ -42,43 +41,43 @@ class Vendor(models.Model):
             return Decimal(str(on_time_delivery_rate)).quantize(Decimal(".01"))
       
 
-      # def calculate_quality_rating_average(self):
-      #       """
-      #       Calculates the average quality rating for a vendor.
-      #       Returns: The average quality rating as a Decimal or None if no completed POs with ratings exist.
-      #       """
-      #       completed_orders = PurchaseOrder.objects.filter(vendor = self, status = "completed", quality_rating__isnull = False)
-      #       if not completed_orders.count():
-      #             return Decimal("0.00")
+      def calculate_quality_rating_average(self):
+            """
+            Calculates the average quality rating for a vendor.
+            Returns: The average quality rating as a Decimal or None if no completed POs with ratings exist.
+            """
+            completed_orders = PurchaseOrder.objects.filter(vendor = self, status = "completed", quality_rating__isnull = False)
+            if not completed_orders.count():
+                  return Decimal("0.00")
 
-      #       average_rating = completed_orders.aggregate(avg_rating = Avg("quality_rating"))[
-      #             "avg_rating"
-      #       ]
-      #       if not average_rating:
-      #             return Decimal("0.00")
+            average_rating = completed_orders.aggregate(avg_rating = Avg("quality_rating"))[
+                  "avg_rating"
+            ]
+            if not average_rating:
+                  return Decimal("0.00")
 
-      #       return Decimal(str(average_rating)).quantize(Decimal(".01"))
+            return Decimal(str(average_rating)).quantize(Decimal(".01"))
       
       
-      # def calculate_fulfillment_rate(self):
-      #       """
-      #       Calculates the fulfillment rate for a vendor.
-      #       Args: vendor_id: ID of the vendor.
-      #       Returns: The fulfillment rate as a Decimal (percentage) or None if no POs exist.
-      #       """
-      #       total_orders = PurchaseOrder.objects.filter(vendor = self).count()
+      def calculate_fulfillment_rate(self):
+            """
+            Calculates the fulfillment rate for a vendor.
+            Args: vendor_id: ID of the vendor.
+            Returns: The fulfillment rate as a Decimal (percentage) or None if no POs exist.
+            """
+            total_orders = PurchaseOrder.objects.filter(vendor = self).count()
 
-      #       if not total_orders:
-      #           return Decimal("0.00")
+            if not total_orders:
+                return Decimal("0.00")
             
-      #       completed_orders = PurchaseOrder.objects.filter(vendor = self, status = "completed")
-      #       fulfilled_orders = completed_orders.count()
+            completed_orders = PurchaseOrder.objects.filter(vendor = self, status = "completed")
+            fulfilled_orders = completed_orders.count()
 
-      #       if not total_orders:
-      #           return Decimal("0.00")
+            if not total_orders:
+                return Decimal("0.00")
             
-      #       fulfillment_rate = (fulfilled_orders / total_orders) * 100
-      #       return Decimal(str(fulfillment_rate)).quantize(Decimal(".01"))
+            fulfillment_rate = (fulfilled_orders / total_orders) * 100
+            return Decimal(str(fulfillment_rate)).quantize(Decimal(".01"))
 
 class PurchaseOrder(models.Model):
 
