@@ -3,7 +3,8 @@ from vendors.views import (
       index, 
       vendors, 
       PurchaseOrderListCreateAPIView, 
-      PurchaseOrderRetrieveUpdateDestroyView
+      PurchaseOrderRetrieveUpdateDestroyView,
+      PurchaseOrderAcknowledgeView
 )
 
 from rest_framework.routers import DefaultRouter
@@ -32,6 +33,12 @@ urlpatterns = [
         "purchase_orders/<int:po_id>/", 
         PurchaseOrderRetrieveUpdateDestroyView.as_view(), 
         name = "purchase-order-read-update-delete",
+    ),
+
+    path(
+        "purchase_orders/<int:po_id>/acknowledge/",
+        PurchaseOrderAcknowledgeView.as_view(),
+        name="purchase-order-acknowledge",
     ),
     
 ]
