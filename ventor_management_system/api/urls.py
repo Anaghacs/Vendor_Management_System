@@ -12,6 +12,17 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'purchase_orders', PurchaseOrderListCreateAPIView)
 urlpatterns = [
+      
+    path(
+          "token/", 
+          TokenObtainPairView.as_view(), 
+          name = "get-token"),
+
+    path(
+          "token/refresh/", 
+          TokenRefreshView.as_view(), 
+          name = "refresh-token"),
+
     path(
         "index/", 
         index, 

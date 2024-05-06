@@ -3,8 +3,9 @@ from django.dispatch import receiver
 from .models import *
 
 
-@receiver(post_save, sender=PurchaseOrder)
+@receiver(post_save, sender = PurchaseOrder)
 def update_vendor_metrics(sender, instance, **kwargs):
+    
     vendor = instance.vendor
 
     # Update metrics in real-time

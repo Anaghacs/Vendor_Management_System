@@ -201,11 +201,11 @@ class PurchaseOrderAcknowledgeView(UpdateAPIView):
             """
             Acknowledge a purchase order and update vendor's average response time.
             """
-            serializer.save(acknowledgment_date=timezone.now())
+            serializer.save(acknowledgment_date = timezone.now())
 
             # Calculate new delivery date (Estimated date - 5 days after vendor acknowledgement)
             acknowledgment_date = serializer.instance.acknowledgment_date
-            new_delivery_date = acknowledgment_date + timezone.timedelta(days=5)
+            new_delivery_date = acknowledgment_date + timezone.timedelta(days = 5)
             serializer.instance.delivery_date = new_delivery_date
             serializer.instance.save()
 
@@ -215,9 +215,9 @@ class PurchaseOrderAcknowledgeView(UpdateAPIView):
             vendor = purchase_order.vendor
             if vendor:
                   avg_response_time = PurchaseOrder.objects.filter(
-                  vendor=vendor, acknowledgment_date__isnull=False
+                  vendor=vendor, acknowledgment_date__isnull = False
                   ).aggregate(
-                  avg_response_time=Avg(F("acknowledgment_date") - F("issue_date"))
+                  avg_response_time = Avg(F("acknowledgment_date") - F("issue_date"))
                   )[
                   "avg_response_time"
                   ]

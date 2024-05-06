@@ -84,7 +84,7 @@ class PurchaseOrder(models.Model):
       #This model captures the details of each purchase order
 
       po_number =  models.CharField(max_length = 50, unique = True)
-      Vendor = models.ForeignKey(Vendor, on_delete = models.CASCADE)
+      vendor = models.ForeignKey(Vendor, on_delete = models.CASCADE)
       order_date = models.DateTimeField(default = timezone.now)
       delivery_date = models.DateTimeField(blank = True, null = True)
       items = models.JSONField()
