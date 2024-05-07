@@ -8,7 +8,8 @@ from .models import (
 from rest_framework import viewsets
 from .serializers import (
       VendorSerializer,
-      PurchaseOrderSerializer
+      PurchaseOrderSerializer,
+      UserSerializer
 )
 
 from rest_framework.generics import (
@@ -17,13 +18,16 @@ from rest_framework.generics import (
     UpdateAPIView,
     RetrieveAPIView,
 )
-
+from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from django.http import Http404
 from django.db.models import Q, F, Avg
+from rest_framework.authtoken.models import Token
 # www.example.com/api/index
 
 @api_view(['GET'])
@@ -93,6 +97,8 @@ def vendors(request):
             obj.delete()
             return Response({'message' : 'Vendor deleted'})
 
+
+      
 
 class PurchaseOrderListCreateAPIView(ListCreateAPIView):
       """
@@ -227,3 +233,30 @@ class PurchaseOrderAcknowledgeView(UpdateAPIView):
 
                   vendor.average_response_time = avg_response_time
                   vendor.save()
+
+class RegisterUser(APIView):
+      def post(self, request):
+            serializer = UserSerializer(data = request.data)
+
+            if not serializer.is_valid():
+                  return Response({'status' : 403, 'errors' : serializer.errors, 'message' : 'some wrong user'})
+            
+            serializer.save()
+
+            user = User.objects.get_or_create(username = serializer.data['username'])
+            print(user)
+            token_obj , _ = Token.objects.get_or_create(user = User.objects.get(username = serializer.data['username']))
+
+            return Response({'status' : 200, 'payload' : serializer.data, 'token' : str(token_obj),'message' : 'your data saved'})
+      
+# class RegisterUser(APIView):
+    
+#     def post(self,request):
+#         _data = request.data
+#         serializer=UserSerializer(data = _data)
+#         if not serializer.is_valid():
+#             return Response(serializer.errors)
+#         serializer.save()
+#         return Response({'message':'User Created'})
+
+      

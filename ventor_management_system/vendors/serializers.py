@@ -1,5 +1,11 @@
 from rest_framework import serializers
 from .models import Vendor, PurchaseOrder, HistoricalPerformance
+from django.contrib.auth.models import User
+
+class UserSerializer(serializers.ModelSerializer):
+      class Meta:
+            model = User
+            fields = ['username', 'password']
 
 # Serializer for Vendor models
 class VendorSerializer(serializers.ModelSerializer):
