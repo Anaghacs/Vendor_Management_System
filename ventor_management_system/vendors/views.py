@@ -27,7 +27,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from django.http import Http404
 from django.db.models import Q, F, Avg
+
 from rest_framework.authtoken.models import Token
+
+from rest_framework_simplejwt.authentication import JWTAuthentication
 # www.example.com/api/index
 
 @api_view(['GET'])
@@ -42,6 +45,8 @@ def index(request):
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
 def vendors(request):
+      authentication_classes = [JWTAuthentication]
+      permission_classes = [IsAuthenticated]
       
       """
       View all vendor
@@ -233,6 +238,7 @@ class PurchaseOrderAcknowledgeView(UpdateAPIView):
 
                   vendor.average_response_time = avg_response_time
                   vendor.save()
+
 
 class RegisterUser(APIView):
       def post(self, request):
