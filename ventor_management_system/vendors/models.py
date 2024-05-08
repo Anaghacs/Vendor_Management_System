@@ -3,10 +3,12 @@ from django.utils import timezone
 from django.db.models import Count, Avg, Sum
 from django.core.validators import MinValueValidator
 from decimal import Decimal
+from django.contrib.auth.models import User
 # Create your models here.
 
 class Vendor(models.Model):
       # This model stores essential information about each vendor.
+      user = models.OneToOneField(User, on_delete = models.CASCADE, blank=False, default=" ")      
       name = models.CharField(max_length = 100, blank = True)
       contact_details = models.TextField(blank = False)
       address = models.TextField(blank = False)

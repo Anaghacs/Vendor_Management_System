@@ -35,6 +35,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 @api_view(['GET'])
 def index(request):
+      
       vendors_details = {
             'name' : 'Anagha',
             'age' : 23,
@@ -45,8 +46,6 @@ def index(request):
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
 def vendors(request):
-      authentication_classes = [JWTAuthentication]
-      permission_classes = [IsAuthenticated]
       
       """
       View all vendor
@@ -61,8 +60,15 @@ def vendors(request):
       """
       if request.method == 'POST':
             data = request.data
+            username = request.data.get('username')
+            password = request.data.get('password')
+
+            print(username, password)
+            user = User.objects.create(username = username , password = password)
+            print(user)
             serializer = VendorSerializer(data = data)
             if serializer.is_valid():
+                  serializer.user = user
                   serializer.save()
                   return Response(serializer.data)
             return Response(serializer.errors)
@@ -254,7 +260,7 @@ class RegisterUser(APIView):
             token_obj , _ = Token.objects.get_or_create(user = User.objects.get(username = serializer.data['username']))
 
             return Response({'status' : 200, 'payload' : serializer.data, 'token' : str(token_obj),'message' : 'your data saved'})
-      
+     
 # class RegisterUser(APIView):
     
 #     def post(self,request):
