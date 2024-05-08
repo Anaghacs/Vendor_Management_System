@@ -23,14 +23,16 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from django.http import Http404
 from django.db.models import Q, F, Avg
 
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.hashers import make_password
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.authentication import TokenAuthentication 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication  
+from rest_framework_simplejwt.tokens import RefreshToken
 # www.example.com/api/index
 
 @api_view(['GET'])
@@ -46,6 +48,7 @@ def index(request):
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
 def vendors(request):
+
       
       """
       View all vendor
@@ -62,6 +65,7 @@ def vendors(request):
             data = request.data
             username = request.data.get('username')
             password = request.data.get('password')
+            
             password = make_password(password)            
             print(username, password)
             user = User.objects.create(username = username , password = password)
@@ -108,12 +112,11 @@ def vendors(request):
             obj = Vendor.objects.get(id = data['id'])
             obj.delete()
             return Response({'message' : 'Vendor deleted'})
-
-
-      
+   
 
 class PurchaseOrderListCreateAPIView(ListCreateAPIView):
       
+      authentication_classes = [ JWTAuthentication]
       permission_classes = [IsAuthenticated]
 
       """
