@@ -8,8 +8,8 @@ from django.contrib.auth.models import User
 
 class Vendor(models.Model):
       # This model stores essential information about each vendor.
-      user = models.OneToOneField(User, on_delete = models.CASCADE, blank=False, default=" ")      
-      name = models.CharField(max_length = 100, blank = True)
+      user = models.OneToOneField(User, on_delete = models.CASCADE, blank=True, null=True)      
+      name = models.CharField(max_length = 100, blank = True, null = True)
       contact_details = models.TextField(blank = False)
       address = models.TextField(blank = False)
       vendor_code = models.CharField(max_length = 50, unique = True, blank = False)

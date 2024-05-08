@@ -29,7 +29,7 @@ from django.http import Http404
 from django.db.models import Q, F, Avg
 
 from rest_framework.authtoken.models import Token
-
+from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 # www.example.com/api/index
 
@@ -62,10 +62,11 @@ def vendors(request):
             data = request.data
             username = request.data.get('username')
             password = request.data.get('password')
-
+            password = make_password(password)            
             print(username, password)
             user = User.objects.create(username = username , password = password)
             print(user)
+            data['user'] = user.id
             serializer = VendorSerializer(data = data)
             if serializer.is_valid():
                   serializer.user = user
@@ -112,6 +113,9 @@ def vendors(request):
       
 
 class PurchaseOrderListCreateAPIView(ListCreateAPIView):
+      
+      permission_classes = [IsAuthenticated]
+
       """
       An API endpoint for both listing and creating purchase orders, with the added functionality of vendor filtering.      
       """
