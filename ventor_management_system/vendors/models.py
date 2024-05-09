@@ -40,8 +40,10 @@ class Vendor(models.Model):
                   return Decimal("0.00")
 
             on_time_delivery_rate = (on_time_deliveries / total_completed_orders) * 100
+            print("=====================",on_time_delivery_rate)
             return Decimal(str(on_time_delivery_rate)).quantize(Decimal(".01"))
       
+
 
       def calculate_quality_rating_average(self):
             """
@@ -57,6 +59,8 @@ class Vendor(models.Model):
             ]
             if not average_rating:
                   return Decimal("0.00")
+            
+            print("====================",average_rating)
 
             return Decimal(str(average_rating)).quantize(Decimal(".01"))
       
@@ -80,6 +84,7 @@ class Vendor(models.Model):
                 return Decimal("0.00")
             
             fulfillment_rate = (fulfilled_orders / total_orders) * 100
+            print("========================================",fulfillment_rate)
             return Decimal(str(fulfillment_rate)).quantize(Decimal(".01"))
 
 class PurchaseOrder(models.Model):

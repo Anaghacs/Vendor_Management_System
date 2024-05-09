@@ -234,6 +234,7 @@ class VendorPerformanceRetrieveView(RetrieveAPIView):
       """
 
       permission_classes = [IsAuthenticated]
+      authentication_classes = [ JWTAuthentication]
       queryset = Vendor.objects.all()
       serializer_class = VendorSerializer
       lookup_url_kwarg = "vendor_id"
@@ -253,8 +254,6 @@ class VendorPerformanceRetrieveView(RetrieveAPIView):
                   "average_response_time": serializer.data["average_response_time"],
                   "fulfillment_rate": serializer.data["fulfillment_rate"],
             }
-
-
             return Response(performance_data)
 
 
