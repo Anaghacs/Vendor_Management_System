@@ -9,7 +9,6 @@ from rest_framework import viewsets
 from .serializers import (
       VendorSerializer,
       PurchaseOrderSerializer,
-      UserSerializer
 )
 
 from rest_framework.generics import (
@@ -33,18 +32,9 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication  
 from rest_framework_simplejwt.tokens import RefreshToken
+
 # www.example.com/api/index
 
-@api_view(['GET'])
-def index(request):
-      
-      vendors_details = {
-            'name' : 'Anagha',
-            'age' : 23,
-            'job' : 'software engineer'
-      }
-
-      return Response(vendors_details)
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
 def vendors(request):
@@ -118,6 +108,7 @@ class PurchaseOrderListCreateAPIView(ListCreateAPIView):
       
       authentication_classes = [ JWTAuthentication]
       permission_classes = [IsAuthenticated]
+      
 
       """
       An API endpoint for both listing and creating purchase orders, with the added functionality of vendor filtering.      
@@ -144,28 +135,11 @@ class PurchaseOrderListCreateAPIView(ListCreateAPIView):
             serializer = PurchaseOrderSerializer(data = request.data)
             serializer.is_valid(raise_exception = True)
             serializer.save()
-            return Response(serializer.data, status = status.HTTP_201_CREATED)
-    
-# class PurchaseOrderRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-#       """
-#       An API endpoint for retrieving, updating, and deleting a particular purchase order.    
-#       """
-
-#       queryset = PurchaseOrder.objects.all()
-#       serializer_class = PurchaseOrderSerializer
-
-#       def get_object(self):
-#             """
-#             Override to handle 404 (Not Found) for missing purchase orders.
-#             """
-#             pkd = self.kwargs.get("po_id")
-#             try:
-#                   return self.queryset.get(pk = pkd)
-#             except PurchaseOrder.DoesNotExist:
-#                   raise Http404("Purchase order ID " + str(pkd) + " is not found.")
-            
+            return Response(serializer.data, status = status.HTTP_201_CREATED)            
      
 class PurchaseOrderRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+      authentication_classes = [ JWTAuthentication]
+      permission_classes = [IsAuthenticated]
       """
       An API endpoint for retrieving, updating, and deleting a particular purchase order.
       """
@@ -212,11 +186,13 @@ class PurchaseOrderRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
             return Response(serializer.data)
     
 class PurchaseOrderAcknowledgeView(UpdateAPIView):
+
+      authentication_classes = [ JWTAuthentication]
+      permission_classes = [IsAuthenticated]
       """
       API endpoint to acknowledge a PO by the vendor.
       """
 
-      permission_classes = [IsAuthenticated]
       queryset = PurchaseOrder.objects.all()
       serializer_class = PurchaseOrderSerializer
       lookup_url_kwarg = "po_id"
@@ -252,30 +228,36 @@ class PurchaseOrderAcknowledgeView(UpdateAPIView):
                   vendor.average_response_time = avg_response_time
                   vendor.save()
 
+class VendorPerformanceRetrieveView(RetrieveAPIView):
+      """
+      API endpoint to retrieve a vendor's performance metrics.
+      """
 
-class RegisterUser(APIView):
-      def post(self, request):
-            serializer = UserSerializer(data = request.data)
+      permission_classes = [IsAuthenticated]
+      queryset = Vendor.objects.all()
+      serializer_class = VendorSerializer
+      lookup_url_kwarg = "vendor_id"
 
-            if not serializer.is_valid():
-                  return Response({'status' : 403, 'errors' : serializer.errors, 'message' : 'some wrong user'})
+      def retrieve(self, request, *args, **kwargs):
+            vendor = self.get_object()
+            serializer = VendorSerializer(vendor)
+
+            serializer.data["on_time_delivery_rate"] = vendor.on_time_delivery_rate
+            serializer.data["quality_rating_avg"] = vendor.quality_rating_avg
+            serializer.data["average_response_time"] = vendor.average_response_time
+            serializer.data["fulfillment_rate"] = vendor.fulfillment_rate
             
-            serializer.save()
+            performance_data = {
+                  "on_time_delivery_rate": serializer.data["on_time_delivery_rate"],
+                  "quality_rating_avg": serializer.data["quality_rating_avg"],
+                  "average_response_time": serializer.data["average_response_time"],
+                  "fulfillment_rate": serializer.data["fulfillment_rate"],
+            }
 
-            user = User.objects.get_or_create(username = serializer.data['username'])
-            print(user)
-            token_obj , _ = Token.objects.get_or_create(user = User.objects.get(username = serializer.data['username']))
 
-            return Response({'status' : 200, 'payload' : serializer.data, 'token' : str(token_obj),'message' : 'your data saved'})
-     
-# class RegisterUser(APIView):
-    
-#     def post(self,request):
-#         _data = request.data
-#         serializer=UserSerializer(data = _data)
-#         if not serializer.is_valid():
-#             return Response(serializer.errors)
-#         serializer.save()
-#         return Response({'message':'User Created'})
+            return Response(performance_data)
+
+
+
 
       

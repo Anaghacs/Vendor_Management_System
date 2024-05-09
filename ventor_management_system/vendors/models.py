@@ -60,6 +60,7 @@ class Vendor(models.Model):
 
             return Decimal(str(average_rating)).quantize(Decimal(".01"))
       
+
       
       def calculate_fulfillment_rate(self):
             """
@@ -102,8 +103,9 @@ class PurchaseOrder(models.Model):
       acknowledgment_date = models.DateTimeField(blank = True, null = True)
 
 
-      def __str__(self):
-            return f" PO :{self.po_number} - {self.vendor.name}"  
+      # def __str__(self):
+      #       return f" PO :{self.po_number}" - f"{self.vendor.name}"  
+
       
 class HistoricalPerformance(models.Model):
       
