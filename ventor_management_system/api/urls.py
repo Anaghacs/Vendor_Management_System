@@ -56,6 +56,7 @@ urlpatterns = [
         VendorPerformanceRetrieveView.as_view(),
         name="vendor-performance-retrieve",
     ),
+    
 
     
 

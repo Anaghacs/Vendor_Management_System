@@ -73,7 +73,10 @@ def vendors(request):
       """
       if request.method == 'PUT':
             data = request.data
-            obj = Vendor.objects.get(id = data['id'])
+            try:
+                  obj = Vendor.objects.get(id = data['id'])
+            except:
+                  return Response({"data" : "Vendor not found."}, status = status.HTTP_400_BAD_REQUEST)
             serializer = VendorSerializer(obj, data = data, partial = False)
             if serializer.is_valid():
                   serializer.save()
@@ -194,7 +197,9 @@ class PurchaseOrderAcknowledgeView(UpdateAPIView):
       """
 
       queryset = PurchaseOrder.objects.all()
+      print(queryset)
       serializer_class = PurchaseOrderSerializer
+      print("==================",serializer_class)
       lookup_url_kwarg = "po_id"
 
       def perform_update(self, serializer):
@@ -209,13 +214,16 @@ class PurchaseOrderAcknowledgeView(UpdateAPIView):
             serializer.instance.delivery_date = new_delivery_date
             serializer.instance.save()
 
+            print("===============",acknowledgment_date, new_delivery_date, serializer.instance.delivery_date, serializer.instance)
+
             # Update average response time for the vendor
             purchase_order = serializer.instance
             
             vendor = purchase_order.vendor
+            print(vendor)
             if vendor:
                   avg_response_time = PurchaseOrder.objects.filter(
-                  vendor=vendor, acknowledgment_date__isnull = False
+                  vendor = vendor, acknowledgment_date__isnull = False
                   ).aggregate(
                   avg_response_time = Avg(F("acknowledgment_date") - F("issue_date"))
                   )[
@@ -238,9 +246,11 @@ class VendorPerformanceRetrieveView(RetrieveAPIView):
       queryset = Vendor.objects.all()
       serializer_class = VendorSerializer
       lookup_url_kwarg = "vendor_id"
+      print("===============", queryset, serializer_class, lookup_url_kwarg)
 
       def retrieve(self, request, *args, **kwargs):
             vendor = self.get_object()
+            print("****************", vendor)
             serializer = VendorSerializer(vendor)
 
             serializer.data["on_time_delivery_rate"] = vendor.on_time_delivery_rate
@@ -254,6 +264,7 @@ class VendorPerformanceRetrieveView(RetrieveAPIView):
                   "average_response_time": serializer.data["average_response_time"],
                   "fulfillment_rate": serializer.data["fulfillment_rate"],
             }
+            print("=====================",performance_data)
             return Response(performance_data)
 
 
